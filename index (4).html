@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="description" content="Highway Dash - A fast-paced 2D arcade car racing game" />
+  <meta name="theme-color" content="#0d0d1a" />
+  <title>Highway Dash 🏎️</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════
+       MAIN MENU
+  ═══════════════════════════════════════════ -->
+  <div id="mainMenu" class="screen active">
+    <div class="menu-bg-anim" id="menuBgAnim"></div>
+    <div class="menu-content">
+      <div class="logo-wrap">
+        <div class="logo-icon">🏎️</div>
+        <h1 class="logo-title">Highway<span>Dash</span></h1>
+        <p class="logo-sub">Arcade Racing</p>
+      </div>
+      <div class="menu-buttons">
+        <button class="btn btn-primary" onclick="Game.startGame()">▶ Start Game</button>
+        <button class="btn btn-secondary" onclick="UI.showScreen('howToPlay')">📖 How To Play</button>
+        <button class="btn btn-secondary" onclick="UI.showScreen('settingsMenu')">⚙️ Settings</button>
+        <button class="btn btn-secondary" onclick="UI.showScreen('achievementsScreen')">🏆 Achievements</button>
+        <button class="btn btn-outline" onclick="UI.showScreen('creditsScreen')">Credits</button>
+      </div>
+      <div class="menu-scores">
+        <span>🥇 Best: <strong id="menuBestScore">0</strong></span>
+        <span>🪙 Coins: <strong id="menuCoins">0</strong></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       HOW TO PLAY
+  ═══════════════════════════════════════════ -->
+  <div id="howToPlay" class="screen">
+    <div class="overlay-panel">
+      <h2>How To Play</h2>
+      <div class="how-grid">
+        <div class="how-item"><span class="how-icon">⬅️ ➡️</span><p>Arrow Keys / A D — Steer</p></div>
+        <div class="how-item"><span class="how-icon">⬆️ ⬇️</span><p>Arrow Keys / W S — Speed</p></div>
+        <div class="how-item"><span class="how-icon">🔥</span><p>Collect Nitro for a speed boost!</p></div>
+        <div class="how-item"><span class="how-icon">🪙</span><p>Collect coins to earn rewards</p></div>
+        <div class="how-item"><span class="how-icon">💥</span><p>Avoid traffic — one crash ends the run</p></div>
+        <div class="how-item"><span class="how-icon">📱</span><p>On mobile use the on-screen buttons</p></div>
+      </div>
+      <button class="btn btn-primary" onclick="UI.showScreen('mainMenu')">← Back</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SETTINGS
+  ═══════════════════════════════════════════ -->
+  <div id="settingsMenu" class="screen">
+    <div class="overlay-panel">
+      <h2>⚙️ Settings</h2>
+      <div class="settings-list">
+        <div class="setting-row">
+          <label>Music</label>
+          <button class="toggle-btn" id="toggleMusic" onclick="Audio.toggleMusic()">ON</button>
+        </div>
+        <div class="setting-row">
+          <label>Sound FX</label>
+          <button class="toggle-btn" id="toggleSFX" onclick="Audio.toggleSFX()">ON</button>
+        </div>
+        <div class="setting-row">
+          <label>Difficulty</label>
+          <div class="difficulty-btns">
+            <button class="diff-btn active" id="diffEasy" onclick="Game.setDifficulty('easy')">Easy</button>
+            <button class="diff-btn" id="diffNormal" onclick="Game.setDifficulty('normal')">Normal</button>
+            <button class="diff-btn" id="diffHard" onclick="Game.setDifficulty('hard')">Hard</button>
+          </div>
+        </div>
+        <div class="setting-row">
+          <label>Car Skin</label>
+          <div class="skin-btns" id="skinBtns"></div>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="UI.showScreen('mainMenu')">← Back</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       CREDITS
+  ═══════════════════════════════════════════ -->
+  <div id="creditsScreen" class="screen">
+    <div class="overlay-panel">
+      <h2>Credits</h2>
+      <p>🎮 <strong>Highway Dash</strong></p>
+      <p>Developed as a pure HTML5 / CSS3 / JavaScript game.</p>
+      <p>All graphics drawn with Canvas & SVG — no external assets.</p>
+      <p>Audio: Web Audio API (procedural sounds).</p>
+      <p style="margin-top:16px;opacity:.6;font-size:.85rem;">v1.0 — 2024</p>
+      <button class="btn btn-primary" onclick="UI.showScreen('mainMenu')">← Back</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       ACHIEVEMENTS
+  ═══════════════════════════════════════════ -->
+  <div id="achievementsScreen" class="screen">
+    <div class="overlay-panel">
+      <h2>🏆 Achievements</h2>
+      <div id="achievementList" class="achievement-list"></div>
+      <button class="btn btn-primary" onclick="UI.showScreen('mainMenu')">← Back</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       GAME CANVAS
+  ═══════════════════════════════════════════ -->
+  <div id="gameScreen" class="screen">
+    <canvas id="gameCanvas"></canvas>
+
+    <!-- HUD -->
+    <div id="hud">
+      <div class="hud-left">
+        <div class="hud-stat">🏁 <span id="hudScore">0</span></div>
+        <div class="hud-stat">🥇 <span id="hudBest">0</span></div>
+      </div>
+      <div class="hud-center">
+        <div id="hudLevel" class="hud-level">LVL 1</div>
+        <div id="hudNitroBar" class="nitro-bar-wrap">
+          <div class="nitro-label">NITRO</div>
+          <div class="nitro-bar-bg"><div id="nitroBar" class="nitro-bar-fill"></div></div>
+        </div>
+      </div>
+      <div class="hud-right">
+        <div class="hud-stat">🪙 <span id="hudCoins">0</span></div>
+        <button class="pause-btn" onclick="Game.togglePause()">⏸</button>
+      </div>
+    </div>
+
+    <!-- Mobile Controls -->
+    <div id="mobileControls">
+      <div class="mobile-row">
+        <button class="mob-btn" id="btnLeft" ontouchstart="MobileCtrl.press('left')" ontouchend="MobileCtrl.release('left')">◀</button>
+        <div class="mob-center-col">
+          <button class="mob-btn mob-nitro" id="btnNitro" ontouchstart="MobileCtrl.press('nitro')" ontouchend="MobileCtrl.release('nitro')">🔥</button>
+        </div>
+        <button class="mob-btn" id="btnRight" ontouchstart="MobileCtrl.press('right')" ontouchend="MobileCtrl.release('right')">▶</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       PAUSE MENU
+  ═══════════════════════════════════════════ -->
+  <div id="pauseMenu" class="screen">
+    <div class="overlay-panel compact">
+      <h2>⏸ Paused</h2>
+      <button class="btn btn-primary" onclick="Game.togglePause()">▶ Resume</button>
+      <button class="btn btn-secondary" onclick="Game.restart()">↺ Restart</button>
+      <button class="btn btn-outline" onclick="Game.quitToMenu()">🏠 Main Menu</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       GAME OVER
+  ═══════════════════════════════════════════ -->
+  <div id="gameOver" class="screen">
+    <div class="overlay-panel compact">
+      <div class="crash-icon">💥</div>
+      <h2>Game Over</h2>
+      <div class="go-stats">
+        <div class="go-stat"><span>Score</span><strong id="goScore">0</strong></div>
+        <div class="go-stat"><span>Best</span><strong id="goBest">0</strong></div>
+        <div class="go-stat"><span>Coins</span><strong id="goCoins">0</strong></div>
+        <div class="go-stat"><span>Level</span><strong id="goLevel">1</strong></div>
+      </div>
+      <div id="newRecord" class="new-record hidden">🎉 New Record!</div>
+      <div id="unlockedAch" class="unlocked-ach"></div>
+      <button class="btn btn-primary" onclick="Game.restart()">▶ Play Again</button>
+      <button class="btn btn-outline" onclick="Game.quitToMenu()">🏠 Menu</button>
+    </div>
+  </div>
+
+  <!-- Achievement Toast -->
+  <div id="achToast" class="ach-toast hidden"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
